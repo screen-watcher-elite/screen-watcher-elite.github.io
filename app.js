@@ -676,7 +676,7 @@ lectern_generate_viva_defense({
   }
 
   // Render Project Canvas Details
-  function renderCanvas(projectId) {
+  function renderCanvas(projectId, syncHash = true) {
     const project = PROJECTS.find(p => p.id === projectId) || PROJECTS[0];
     activeProjectId = project.id;
 
@@ -893,16 +893,16 @@ lectern_generate_viva_defense({
       canvasContainer.style.transform = 'translateY(0)';
     }, 150);
 
-    // Sync URL hash
-    if (history.replaceState) {
-      history.replaceState(null, null, '#' + project.id);
-    } else {
-      window.location.hash = project.id;
+    // Sync URL hash if requested
+    if (syncHash) {
+      if (history.replaceState) {
+        history.replaceState(null, null, '#' + project.id);
+      }
     }
   }
 
-  function selectProject(id) {
-    renderCanvas(id);
+  function selectProject(id, syncHash = true) {
+    renderCanvas(id, syncHash);
   }
 
   // Filter Buttons
@@ -2020,9 +2020,79 @@ lectern_generate_viva_defense({
   function handleHashChange() {
     const hash = window.location.hash.replace('#', '');
     if (hash && PROJECTS.some(p => p.id === hash)) {
-      selectProject(hash);
+      selectProject(hash, false);
       setTimeout(scrollToProjects, 200);
+    } else if (hash === 'hero' || hash === 'top' || hash === 'home' || !hash) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+  }
+
+  function initNavigation() {
+    const brand = document.getElementById('brand-home') || document.querySelector('.brand');
+    const navHome = document.getElementById('nav-home');
+
+    function goHome(e) {
+      if (e) e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (history.replaceState) {
+        history.replaceState(null, null, window.location.pathname + window.location.search);
+      }
+      SoundEngine.tick();
+      updateActiveNav('hero');
+    }
+
+    if (brand) brand.addEventListener('click', goHome);
+    if (navHome) navHome.addEventListener('click', goHome);
+
+    const sections = [
+      { id: 'hero', navId: 'nav-home' },
+      { id: 'projects', navId: 'nav-projects' },
+      { id: 'terminal', navId: 'nav-terminal' },
+      { id: 'about', navId: 'nav-about' }
+    ];
+
+    function updateActiveNav(forceSection) {
+      const activeId = forceSection || getCurrentSection();
+      sections.forEach(sec => {
+        const link = document.getElementById(sec.navId);
+        if (link) {
+          link.classList.toggle('active', sec.id === activeId);
+        }
+      });
+    }
+
+    function getCurrentSection() {
+      const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+      if (scrollY < 260) return 'hero';
+
+      const terminalEl = document.getElementById('terminal');
+      const aboutEl = document.getElementById('about');
+      const projectsEl = document.getElementById('projects');
+
+      const windowH = window.innerHeight;
+      const docH = document.documentElement.scrollHeight;
+
+      if (scrollY + windowH >= docH - 60) {
+        return 'about';
+      }
+
+      if (aboutEl && scrollY >= aboutEl.offsetTop - 180) {
+        return 'about';
+      }
+      if (terminalEl && scrollY >= terminalEl.offsetTop - 180) {
+        return 'terminal';
+      }
+      if (projectsEl && scrollY >= projectsEl.offsetTop - 180) {
+        return 'projects';
+      }
+      return 'hero';
+    }
+
+    window.addEventListener('scroll', () => {
+      updateActiveNav();
+    }, { passive: true });
+
+    updateActiveNav();
   }
 
   function init() {
@@ -2055,16 +2125,20 @@ lectern_generate_viva_defense({
     // 4. Check hash in URL on page load (support direct deep-linking e.g. #tensorforge)
     const hash = window.location.hash.replace('#', '');
     if (hash && PROJECTS.some(p => p.id === hash)) {
-      selectProject(hash);
+      selectProject(hash, false);
       setTimeout(scrollToProjects, 350);
     } else {
-      selectProject('omnidesk');
+      selectProject('omnidesk', false);
+      window.scrollTo({ top: 0, behavior: 'instant' });
     }
 
-    // 5. Listen for hash changes (e.g. back/forward, deep links)
+    // 5. Initialize Navigation & Active Scrollspy
+    initNavigation();
+
+    // 6. Listen for hash changes (e.g. back/forward, deep links)
     window.addEventListener('hashchange', handleHashChange);
 
-    // 6. Initial terminal greeting & interactive hints
+    // 7. Initial terminal greeting & interactive hints
     appendTerminalLog('rust', 'OmniDesk MCP Host v2.1.0 (Windows PE x64 Native)');
     appendTerminalLog('rust', 'Loaded: Win32 PostMessage pipeline, WinRT OcrEngine, 500MB Rolling Cache');
     appendTerminalLog('rpc', 'Client initialized connection over stdio (JSON-RPC 2.0)');

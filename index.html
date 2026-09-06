@@ -26,7 +26,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <link rel="stylesheet" href="style.css?v=20260906-7">
+  <link rel="stylesheet" href="style.css?v=20260906-8">
 </head>
 <body>
   <!-- Interactive Fluid Cursor Glow -->
@@ -45,7 +45,7 @@
   <!-- Navigation Bar -->
   <header class="site-header">
     <div class="header-inner">
-      <div class="brand">
+      <div class="brand" id="brand-home" title="Return to Home (Top)" role="button" tabindex="0">
         <div class="avatar-ring">
           <img src="assets/avatar.jpg" alt="Ashutosh Chikane" class="avatar-img" onerror="this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\' fill=\'%236366f1\'><circle cx=\'50\' cy=\'50\' r=\'40\'/></svg>'">
         </div>
@@ -61,9 +61,10 @@
       </div>
 
       <nav class="header-nav">
-        <a href="#projects" class="nav-link active">Projects</a>
-        <a href="#terminal" class="nav-link">MCP Terminal</a>
-        <a href="#about" class="nav-link">About</a>
+        <a href="#hero" class="nav-link active" id="nav-home">Home</a>
+        <a href="#projects" class="nav-link" id="nav-projects">Projects</a>
+        <a href="#terminal" class="nav-link" id="nav-terminal">MCP Terminal</a>
+        <a href="#about" class="nav-link" id="nav-about">About</a>
         
         <!-- Interactive Controls -->
         <div class="nav-interactive-group">
@@ -98,7 +99,7 @@
 
   <!-- Hero Section -->
   <main class="main-container">
-    <section class="hero-section">
+    <section id="hero" class="hero-section">
       <div class="hero-badge">
         <span class="sparkle">✦</span> Frontier Systems & AI Alignment • 2026 Portfolio
       </div>
@@ -108,6 +109,20 @@
       <p class="hero-subtitle">
         Architect of native high-speed Model Context Protocol (MCP) engines, deterministic anti-injection firewalls, and enterprise-scale academic intelligence operating systems.
       </p>
+
+      <!-- Hero Action CTAs -->
+      <div class="hero-actions">
+        <a href="#projects" class="btn btn-primary hero-btn" id="hero-btn-projects">
+          <span>🚀 Explore Frontier Projects</span>
+        </a>
+        <a href="#terminal" class="btn btn-secondary hero-btn" id="hero-btn-terminal">
+          <span class="live-pulse-dot"></span>
+          <span>⚡ Live MCP Sandbox</span>
+        </a>
+        <a href="#about" class="btn btn-secondary hero-btn" id="hero-btn-about">
+          <span>👤 Architect Bio & Focus</span>
+        </a>
+      </div>
 
       <!-- Metrics Highlight Grid with 3D Tilt & Count-Up -->
       <div class="hero-stats">
@@ -313,6 +328,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=20260906-7"></script>
+  <script src="app.js?v=20260906-8"></script>
 </body>
 </html>
