@@ -640,9 +640,6 @@ lectern_generate_viva_defense({
   const categoryFilters = document.getElementById('category-filters');
   const terminalOutput = document.getElementById('terminal-output');
   const btnClearTerminal = document.getElementById('btn-clear-terminal');
-  const deployModal = document.getElementById('deploy-modal');
-  const btnOpenDeploy = document.getElementById('btn-open-deploy');
-  const btnCloseModal = document.getElementById('btn-close-modal');
 
   // Render Tabs
   function renderTabs() {
@@ -1074,22 +1071,6 @@ lectern_generate_viva_defense({
     appendTerminalLog('rust', 'Terminal reset. MCP stdio stream listening on channel 0...');
   });
 
-  // ════════════════════════════════════════════════════════════════════════════
-  // 4. Modal Guide
-  // ════════════════════════════════════════════════════════════════════════════
-  btnOpenDeploy.addEventListener('click', () => {
-    deployModal.classList.add('active');
-  });
-
-  btnCloseModal.addEventListener('click', () => {
-    deployModal.classList.remove('active');
-  });
-
-  deployModal.addEventListener('click', (e) => {
-    if (e.target === deployModal) {
-      deployModal.classList.remove('active');
-    }
-  });
 
   // ════════════════════════════════════════════════════════════════════════════
   // 4b. Interactive Mini-TensorForge 2D Matrix Canvas Engine
