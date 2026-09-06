@@ -1090,6 +1090,17 @@ lectern_generate_viva_defense({
     const areaEl = document.getElementById('mat-area');
     const statusEl = document.getElementById('mat-status');
 
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width > 0) {
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = Math.floor(rect.width * dpr);
+        canvas.height = Math.floor((rect.height || 180) * dpr);
+        render();
+      }
+    }
+    window.addEventListener('resize', resizeCanvas);
+
     function update() {
       if (inA) mat.a = parseFloat(inA.value) || 0;
       if (inB) mat.b = parseFloat(inB.value) || 0;
@@ -1118,12 +1129,13 @@ lectern_generate_viva_defense({
 
       const ox = w / 2;
       const oy = h / 2;
-      const scale = 48;
+      const dpr = window.devicePixelRatio || 1;
+      const scale = (canvas.clientWidth < 400 ? 32 : 44) * dpr;
 
       // Draw background Cartesian grid
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-      ctx.lineWidth = 1;
-      for (let x = -5; x <= 5; x++) {
+      ctx.lineWidth = Math.max(1, dpr * 0.8);
+      for (let x = -6; x <= 6; x++) {
         ctx.beginPath();
         ctx.moveTo(ox + x * scale, 0);
         ctx.lineTo(ox + x * scale, h);
@@ -1227,7 +1239,9 @@ lectern_generate_viva_defense({
       });
     });
 
+    resizeCanvas();
     update();
+    setTimeout(resizeCanvas, 80);
   }
 
   // ════════════════════════════════════════════════════════════════════════════
@@ -1259,12 +1273,11 @@ lectern_generate_viva_defense({
     const ripples = [];
     const packets = [];
 
-    window.addEventListener('click', e => {
-      ripples.push({ x: e.clientX, y: e.clientY, r: 0, maxR: 240, alpha: 0.75 });
-      // Blast nearby particles outward with physics impulse
+    function triggerImpulse(x, y) {
+      ripples.push({ x, y, r: 0, maxR: 240, alpha: 0.75 });
       for (let p of particles) {
-        const dx = p.x - e.clientX;
-        const dy = p.y - e.clientY;
+        const dx = p.x - x;
+        const dy = p.y - y;
         const dist = Math.hypot(dx, dy);
         if (dist < 240 && dist > 1) {
           const force = (1 - dist / 240) * 9;
@@ -1272,7 +1285,31 @@ lectern_generate_viva_defense({
           p.vy += (dy / dist) * force;
         }
       }
+    }
+
+    window.addEventListener('click', e => {
+      triggerImpulse(e.clientX, e.clientY);
     });
+
+    window.addEventListener('touchstart', e => {
+      if (e.touches && e.touches[0]) {
+        mouse.x = e.touches[0].clientX;
+        mouse.y = e.touches[0].clientY;
+        triggerImpulse(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchmove', e => {
+      if (e.touches && e.touches[0]) {
+        mouse.x = e.touches[0].clientX;
+        mouse.y = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => {
+      mouse.x = -1000;
+      mouse.y = -1000;
+    }, { passive: true });
 
     const particleCount = Math.min(50, Math.floor((width * height) / 26000));
     const particles = [];
@@ -1776,6 +1813,10 @@ lectern_generate_viva_defense({
   function initCursorGlow() {
     const glow = document.getElementById('cursor-glow');
     if (!glow) return;
+    if (window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
+      glow.style.display = 'none';
+      return;
+    }
 
     let mouseX = window.innerWidth / 2;
     let mouseY = window.innerHeight / 2;
@@ -1826,14 +1867,14 @@ lectern_generate_viva_defense({
     const sparks = [];
     const colors = ['#6366f1', '#38bdf8', '#10b981', '#f43f5e', '#a855f7', '#34d399'];
 
-    window.addEventListener('click', e => {
+    function spawnSparks(x, y) {
       const count = 10;
       for (let i = 0; i < count; i++) {
         const angle = (Math.PI * 2 / count) * i + (Math.random() - 0.5) * 0.6;
         const speed = 2.5 + Math.random() * 4.2;
         sparks.push({
-          x: e.clientX,
-          y: e.clientY,
+          x: x,
+          y: y,
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed,
           radius: 1.8 + Math.random() * 2,
@@ -1842,7 +1883,17 @@ lectern_generate_viva_defense({
           decay: 0.022 + Math.random() * 0.025
         });
       }
+    }
+
+    window.addEventListener('click', e => {
+      spawnSparks(e.clientX, e.clientY);
     });
+
+    window.addEventListener('touchstart', e => {
+      if (e.touches && e.touches[0]) {
+        spawnSparks(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: true });
 
     function loop() {
       ctx.clearRect(0, 0, w, h);
