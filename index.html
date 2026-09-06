@@ -26,11 +26,15 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <link rel="stylesheet" href="style.css?v=20260906-4">
+  <link rel="stylesheet" href="style.css?v=20260906-5">
 </head>
 <body>
-  <!-- Interactive Neural & Matrix Canvases -->
+  <!-- Interactive Fluid Cursor Glow -->
+  <div id="cursor-glow" class="cursor-glow"></div>
+
+  <!-- Interactive Neural, Sparks & Matrix Canvases -->
   <canvas id="neural-canvas" class="neural-canvas"></canvas>
+  <canvas id="sparks-canvas" class="sparks-canvas"></canvas>
   <canvas id="matrix-rain-canvas" class="matrix-rain-canvas"></canvas>
 
   <!-- Ambient Glow Elements -->
@@ -69,7 +73,15 @@
             <button class="theme-dot theme-emerald" data-theme="emerald" title="Matrix Emerald"></button>
             <button class="theme-dot theme-rose" data-theme="rose" title="Anthropic Rose"></button>
           </div>
-          <button class="sfx-toggle-btn active" id="btn-toggle-sfx" title="Toggle Sound Effects">🔊 SFX</button>
+          <button class="sfx-toggle-btn active" id="btn-toggle-sfx" title="Toggle Sound Effects">
+            <span id="sfx-icon">🔊</span> SFX
+            <span class="audio-visualizer" id="audio-visualizer">
+              <span class="v-bar"></span>
+              <span class="v-bar"></span>
+              <span class="v-bar"></span>
+              <span class="v-bar"></span>
+            </span>
+          </button>
           <button class="quick-cmd-btn" id="btn-open-cmd" title="Command Palette (Ctrl+K)"><kbd>⌘K</kbd></button>
           <button class="quick-cmd-btn" id="btn-open-shortcuts" title="Keyboard Shortcuts (?)"><kbd>?</kbd></button>
         </div>
@@ -97,22 +109,22 @@
         Architect of native high-speed Model Context Protocol (MCP) engines, deterministic anti-injection firewalls, and enterprise-scale academic intelligence operating systems.
       </p>
 
-      <!-- Metrics Highlight Grid -->
+      <!-- Metrics Highlight Grid with 3D Tilt & Count-Up -->
       <div class="hero-stats">
-        <div class="stat-card">
-          <div class="stat-number">150k+</div>
+        <div class="stat-card" data-tilt>
+          <div class="stat-number count-up" data-prefix="" data-target="150" data-suffix="k+">150k+</div>
           <div class="stat-label">Lines of Systems Code Built</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-number">&lt; 0.1ms</div>
+        <div class="stat-card" data-tilt>
+          <div class="stat-number count-up" data-prefix="< " data-target="0.1" data-suffix="ms" data-decimals="1">< 0.1ms</div>
           <div class="stat-label">Kernel Input Syscall Latency</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-number">80–90%</div>
+        <div class="stat-card" data-tilt>
+          <div class="stat-number count-up" data-prefix="" data-target="90" data-suffix="%" data-display="80–90%">80–90%</div>
           <div class="stat-label">Vision Token Reduction (Visual Diff)</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-number">7</div>
+        <div class="stat-card" data-tilt>
+          <div class="stat-number count-up" data-prefix="" data-target="7" data-suffix="">7</div>
           <div class="stat-label">AI Safety Benchmarks Audited</div>
         </div>
       </div>
@@ -336,6 +348,6 @@ git push -u origin main</code></pre>
     </div>
   </div>
 
-  <script src="app.js?v=20260906-4"></script>
+  <script src="app.js?v=20260906-5"></script>
 </body>
 </html>

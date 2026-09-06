@@ -18,8 +18,34 @@
         if (AudioCtx) this.ctx = new AudioCtx();
       }
     },
+    pulseVisualizer(duration = 500) {
+      const vis = document.getElementById('audio-visualizer');
+      if (!vis) return;
+      vis.classList.add('pulsing');
+      clearTimeout(vis._timer);
+      vis._timer = setTimeout(() => vis.classList.remove('pulsing'), duration);
+    },
+    tick() {
+      if (!this.enabled) return;
+      this.init();
+      if (!this.ctx) return;
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      try {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.008, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.025);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.025);
+      } catch (e) {}
+    },
     click() {
       if (!this.enabled) return;
+      this.pulseVisualizer(300);
       this.init();
       if (!this.ctx) return;
       if (this.ctx.state === 'suspended') this.ctx.resume();
@@ -39,6 +65,7 @@
     },
     success() {
       if (!this.enabled) return;
+      this.pulseVisualizer(650);
       this.init();
       if (!this.ctx) return;
       if (this.ctx.state === 'suspended') this.ctx.resume();
@@ -59,6 +86,7 @@
     },
     laser() {
       if (!this.enabled) return;
+      this.pulseVisualizer(500);
       this.init();
       if (!this.ctx) return;
       if (this.ctx.state === 'suspended') this.ctx.resume();
@@ -637,7 +665,12 @@ lectern_generate_viva_defense({
         <span class="tab-badge ${badgeClass}">${badgeText}</span>
       `;
 
+      btn.addEventListener('mouseenter', () => {
+        SoundEngine.tick();
+      });
+
       btn.addEventListener('click', () => {
+        SoundEngine.click();
         selectProject(project.id);
       });
 
@@ -856,6 +889,9 @@ lectern_generate_viva_defense({
         initMiniTensorForgeCanvas();
       }
 
+      // Re-bind 3D tilt & specular glow on fresh architecture cards
+      init3DTiltCards();
+
       canvasContainer.style.opacity = '1';
       canvasContainer.style.transform = 'translateY(0)';
     }, 150);
@@ -1010,15 +1046,22 @@ lectern_generate_viva_defense({
     const data = TERMINAL_RESPONSES[toolKey];
     if (!data) return;
 
+    SoundEngine.laser();
+    SoundEngine.pulseVisualizer(900);
+
     data.logs.forEach((log, index) => {
       setTimeout(() => {
         appendTerminalLog(log.prefix, log.text);
+        if (index === data.logs.length - 1) {
+          SoundEngine.success();
+        }
       }, index * 120);
     });
   }
 
   // Bind Tool Buttons
   document.querySelectorAll('.tool-btn').forEach(btn => {
+    btn.addEventListener('mouseenter', () => SoundEngine.tick());
     btn.addEventListener('click', () => {
       const toolKey = btn.getAttribute('data-tool');
       simulateDispatch(toolKey);
@@ -1233,18 +1276,31 @@ lectern_generate_viva_defense({
     });
 
     const ripples = [];
+    const packets = [];
+
     window.addEventListener('click', e => {
-      ripples.push({ x: e.clientX, y: e.clientY, r: 0, maxR: 180, alpha: 0.6 });
+      ripples.push({ x: e.clientX, y: e.clientY, r: 0, maxR: 240, alpha: 0.75 });
+      // Blast nearby particles outward with physics impulse
+      for (let p of particles) {
+        const dx = p.x - e.clientX;
+        const dy = p.y - e.clientY;
+        const dist = Math.hypot(dx, dy);
+        if (dist < 240 && dist > 1) {
+          const force = (1 - dist / 240) * 9;
+          p.vx += (dx / dist) * force;
+          p.vy += (dy / dist) * force;
+        }
+      }
     });
 
-    const particleCount = Math.min(45, Math.floor((width * height) / 28000));
+    const particleCount = Math.min(50, Math.floor((width * height) / 26000));
     const particles = [];
     for (let i = 0; i < particleCount; i++) {
       particles.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.6,
-        vy: (Math.random() - 0.5) * 0.6,
+        vx: (Math.random() - 0.5) * 0.7,
+        vy: (Math.random() - 0.5) * 0.7,
         radius: Math.random() * 2 + 1
       });
     }
@@ -1255,7 +1311,7 @@ lectern_generate_viva_defense({
       // Render expanding ripples
       for (let rIdx = ripples.length - 1; rIdx >= 0; rIdx--) {
         const rip = ripples[rIdx];
-        rip.r += 4;
+        rip.r += 4.5;
         rip.alpha -= 0.015;
         if (rip.alpha <= 0 || rip.r >= rip.maxR) {
           ripples.splice(rIdx, 1);
@@ -1274,6 +1330,12 @@ lectern_generate_viva_defense({
         p.x += p.vx;
         p.y += p.vy;
 
+        // Dampen shockwave impulse back to normal cruise speed
+        p.vx *= 0.985;
+        p.vy *= 0.985;
+        if (Math.abs(p.vx) < 0.2) p.vx += (Math.random() - 0.5) * 0.1;
+        if (Math.abs(p.vy) < 0.2) p.vy += (Math.random() - 0.5) * 0.1;
+
         if (p.x < 0) p.x = width;
         if (p.x > width) p.x = 0;
         if (p.y < 0) p.y = height;
@@ -1283,12 +1345,12 @@ lectern_generate_viva_defense({
         const dx = mouse.x - p.x;
         const dy = mouse.y - p.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 130) {
-          p.x -= (dx / dist) * 1.5;
-          p.y -= (dy / dist) * 1.5;
+        if (dist < 140) {
+          p.x -= (dx / dist) * 1.8;
+          p.y -= (dy / dist) * 1.8;
 
-          ctx.strokeStyle = `rgba(99, 102, 241, ${(1 - dist / 130) * 0.4})`;
-          ctx.lineWidth = 1;
+          ctx.strokeStyle = `rgba(99, 102, 241, ${(1 - dist / 140) * 0.5})`;
+          ctx.lineWidth = 1.2;
           ctx.beginPath();
           ctx.moveTo(p.x, p.y);
           ctx.lineTo(mouse.x, mouse.y);
@@ -1296,24 +1358,51 @@ lectern_generate_viva_defense({
         }
 
         // Draw particle node
-        ctx.fillStyle = 'rgba(165, 180, 252, 0.45)';
+        ctx.fillStyle = 'rgba(165, 180, 252, 0.5)';
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fill();
 
-        // Connect adjacent particles
+        // Connect adjacent particles & spawn data packets
         for (let j = i + 1; j < particles.length; j++) {
           const p2 = particles[j];
           const dist2 = Math.hypot(p.x - p2.x, p.y - p2.y);
-          if (dist2 < 115) {
-            ctx.strokeStyle = `rgba(99, 102, 241, ${(1 - dist2 / 115) * 0.22})`;
+          if (dist2 < 125) {
+            ctx.strokeStyle = `rgba(99, 102, 241, ${(1 - dist2 / 125) * 0.25})`;
             ctx.lineWidth = 0.8;
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
             ctx.stroke();
+
+            // Spawn data packet
+            if (packets.length < 15 && Math.random() < 0.0035) {
+              packets.push({
+                p1: p,
+                p2: p2,
+                t: 0,
+                speed: 0.018 + Math.random() * 0.02,
+                color: Math.random() > 0.5 ? '#38bdf8' : '#818cf8'
+              });
+            }
           }
         }
+      }
+
+      // Render traveling data packets
+      for (let k = packets.length - 1; k >= 0; k--) {
+        const pkt = packets[k];
+        pkt.t += pkt.speed;
+        if (pkt.t >= 1) {
+          packets.splice(k, 1);
+          continue;
+        }
+        const px = pkt.p1.x + (pkt.p2.x - pkt.p1.x) * pkt.t;
+        const py = pkt.p1.y + (pkt.p2.y - pkt.p1.y) * pkt.t;
+        ctx.fillStyle = pkt.color;
+        ctx.beginPath();
+        ctx.arc(px, py, 2.2, 0, Math.PI * 2);
+        ctx.fill();
       }
 
       requestAnimationFrame(animate);
@@ -1700,6 +1789,183 @@ lectern_generate_viva_defense({
     });
   }
 
+  // ════════════════════════════════════════════════════════════════════════════
+  // 4j. Interactive Fluid Cursor Glow Follower
+  // ════════════════════════════════════════════════════════════════════════════
+  function initCursorGlow() {
+    const glow = document.getElementById('cursor-glow');
+    if (!glow) return;
+
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let currentX = mouseX;
+    let currentY = mouseY;
+    let active = false;
+
+    window.addEventListener('mousemove', e => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      if (!active) {
+        active = true;
+        glow.classList.add('active');
+      }
+    });
+
+    window.addEventListener('mouseleave', () => {
+      glow.classList.remove('active');
+      active = false;
+    });
+
+    function loop() {
+      currentX += (mouseX - currentX) * 0.16;
+      currentY += (mouseY - currentY) * 0.16;
+      glow.style.left = `${currentX.toFixed(1)}px`;
+      glow.style.top = `${currentY.toFixed(1)}px`;
+      requestAnimationFrame(loop);
+    }
+    loop();
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 4k. Interactive Cyber Click Sparks
+  // ════════════════════════════════════════════════════════════════════════════
+  function initClickSparks() {
+    const canvas = document.getElementById('sparks-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    let w = (canvas.width = window.innerWidth);
+    let h = (canvas.height = window.innerHeight);
+
+    window.addEventListener('resize', () => {
+      w = (canvas.width = window.innerWidth);
+      h = (canvas.height = window.innerHeight);
+    });
+
+    const sparks = [];
+    const colors = ['#6366f1', '#38bdf8', '#10b981', '#f43f5e', '#a855f7', '#34d399'];
+
+    window.addEventListener('click', e => {
+      const count = 10;
+      for (let i = 0; i < count; i++) {
+        const angle = (Math.PI * 2 / count) * i + (Math.random() - 0.5) * 0.6;
+        const speed = 2.5 + Math.random() * 4.2;
+        sparks.push({
+          x: e.clientX,
+          y: e.clientY,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          radius: 1.8 + Math.random() * 2,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          life: 1.0,
+          decay: 0.022 + Math.random() * 0.025
+        });
+      }
+    });
+
+    function loop() {
+      ctx.clearRect(0, 0, w, h);
+      for (let i = sparks.length - 1; i >= 0; i--) {
+        const s = sparks[i];
+        s.x += s.vx;
+        s.y += s.vy;
+        s.vy += 0.09; // subtle gravity
+        s.vx *= 0.98;
+        s.life -= s.decay;
+
+        if (s.life <= 0) {
+          sparks.splice(i, 1);
+          continue;
+        }
+
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, s.life);
+        ctx.fillStyle = s.color;
+        ctx.shadowColor = s.color;
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+      requestAnimationFrame(loop);
+    }
+    loop();
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 4l. 3D Card Perspective Tilt & Dynamic Specular Shine
+  // ════════════════════════════════════════════════════════════════════════════
+  function init3DTiltCards() {
+    function bindElement(el) {
+      if (!el || el._hasTiltBound) return;
+      el._hasTiltBound = true;
+
+      el.addEventListener('mousemove', e => {
+        const rect = el.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const cx = rect.width / 2;
+        const cy = rect.height / 2;
+
+        const rotX = ((y - cy) / cy) * -6.5; // max 6.5 deg tilt
+        const rotY = ((x - cx) / cx) * 6.5;
+
+        el.style.transform = `perspective(1000px) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg) scale3d(1.015, 1.015, 1.015)`;
+        el.style.setProperty('--mouse-x', `${x}px`);
+        el.style.setProperty('--mouse-y', `${y}px`);
+      });
+
+      el.addEventListener('mouseleave', () => {
+        el.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+        el.style.setProperty('--mouse-x', '-999px');
+        el.style.setProperty('--mouse-y', '-999px');
+      });
+    }
+
+    document.querySelectorAll('[data-tilt], .stat-card, .card-block, .mini-lab-card, .code-box, .competency-box').forEach(bindElement);
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 4m. Animated Rolling Stat Counters
+  // ════════════════════════════════════════════════════════════════════════════
+  function initStatCounters() {
+    const elements = document.querySelectorAll('.count-up');
+    if (!elements.length) return;
+
+    elements.forEach(el => {
+      const target = parseFloat(el.getAttribute('data-target')) || 0;
+      const prefix = el.getAttribute('data-prefix') || '';
+      const suffix = el.getAttribute('data-suffix') || '';
+      const decimals = parseInt(el.getAttribute('data-decimals') || '0', 10);
+      const displayOverride = el.getAttribute('data-display');
+
+      let start = 0;
+      const duration = 1400;
+      const startTime = performance.now();
+
+      function tickCounter(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const ease = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+        const current = start + (target - start) * ease;
+
+        if (displayOverride && progress >= 0.85) {
+          el.textContent = displayOverride;
+        } else {
+          el.textContent = `${prefix}${current.toFixed(decimals)}${suffix}`;
+        }
+
+        if (progress < 1) {
+          requestAnimationFrame(tickCounter);
+        } else if (displayOverride) {
+          el.textContent = displayOverride;
+        }
+      }
+      requestAnimationFrame(tickCounter);
+    });
+  }
+
   function scrollToTerminal() {
     const el = document.getElementById('terminal');
     if (el) {
@@ -1731,6 +1997,10 @@ lectern_generate_viva_defense({
     // 1. Initialize interactive visual & audio systems
     const setTheme = initThemeSwitcher();
     initNeuralBackground();
+    initCursorGlow();
+    initClickSparks();
+    init3DTiltCards();
+    initStatCounters();
     initCommandPalette(setTheme);
     const shortcutsModal = initShortcutsModal();
     initKeyboardHotkeys(shortcutsModal);
