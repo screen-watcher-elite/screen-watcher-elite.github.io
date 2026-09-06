@@ -19,8 +19,27 @@
       badgeText: '🔒 Private Frontier Engine',
       category: 'computer-use',
       tags: ['Rust Core', 'Win32 Syscalls', 'WinRT OCR', 'Ghost Input', 'Headless COM', '500MB Rolling Cache'],
-      image: 'assets/autonomous_architecture_diagram.png',
-      imageCaption: 'OmniDesk Multi-Agent Architecture: Ghost Viewport decoupling input injection from physical host queues.',
+      image: null,
+      simulatedLog: {
+        title: 'omnidesk-mcp ~ native rust stdio protocol engine (JSON-RPC 2.0)',
+        status: 'Win32 Kernel PostMessageW • 0% Focus Steal',
+        content: `[2026-09-06 18:20:00.012] [omnidesk::init] Win32 Subsystem initialized (x86_64-pc-windows-msvc)
+[2026-09-06 18:20:00.015] [omnidesk::cache] Dynamic Rolling Frame Cache allocated: 500 MB
+[2026-09-06 18:20:00.022] [stdio::in]       --> tools/call "desktop_ghost_type"
+{
+  "hwnd": 0x00120C14,
+  "text": "cargo test --release\\n",
+  "auto_find_edit": true
+}
+[2026-09-06 18:20:00.023] [omnidesk::ghost] Target HWND 0x00120C14 located in background worker thread
+[2026-09-06 18:20:00.024] [omnidesk::ghost] Delivered 21 WM_CHAR signals via Win32 PostMessageW (Host cursor focus delta = 0px)
+[2026-09-06 18:20:00.025] [stdio::out]      <-- {"success": true, "chars_injected": 21, "focus_stolen": false, "latency_us": 84}
+
+[2026-09-06 18:20:01.100] [stdio::in]       --> tools/call "desktop_click_text" {"text": "Run Benchmark", "exact": false}
+[2026-09-06 18:20:01.124] [omnidesk::ocr]   Hardware WinRT OcrEngine indexed 1,920x1,080 viewport in 23.8ms (184 bounding boxes)
+[2026-09-06 18:20:01.125] [omnidesk::ocr]   Match found: "Run Benchmark" at rect [(840, 412), 120x32px]
+[2026-09-06 18:20:01.126] [stdio::out]      <-- {"success": true, "clicked": {"x": 900, "y": 428}, "precision": "subpixel"}`
+      },
       repoUrl: null, // Private
       demoUrl: null,
       summary: 'OmniDesk is a high-performance native Windows computer-use MCP server written in pure Rust. It breaks the fatal flaw of traditional computer use: mouse hijacking. Through Win32 message pipelines (WM_CHAR / WM_LBUTTONDOWN) and off-screen Ghost Viewports, autonomous AI agents control desktop applications simultaneously without moving your mouse cursor by even 1 pixel.',
@@ -78,8 +97,28 @@ desktop_click_text({
       badgeText: '🔒 Private Frontier Engine',
       category: 'browser',
       tags: ['TypeScript', 'Puppeteer CDP', 'Set-of-Marks (SoM)', 'Anti-Injection Shield', '1-Turn Fast-Fill', '100MB LRU'],
-      image: 'assets/som_preview.png',
-      imageCaption: 'Real-time Set-of-Marks visual overlay on TensorForge: interactive elements badged with persistent high-contrast IDs.',
+      image: null,
+      simulatedLog: {
+        title: 'browser-vision-pro-mcp ~ chrome devtools protocol (CDP)',
+        status: 'Set-of-Marks Active • Anti-Injection Firewall OK',
+        content: `[2026-09-06 18:22:15.002] [cdp::session] Attached to Target ID: 8B92F1A02E (Chrome/Edge Native Engine)
+[2026-09-06 18:22:15.005] [security::firewall] Running Computed-Style Scrubber: getComputedStyle() on 1,420 DOM nodes
+[2026-09-06 18:22:15.009] [security::firewall] Purged 2 hidden elements (opacity: 0, offscreen -9999px) - Injections Defused: 0 adversarial payloads
+[2026-09-06 18:22:15.018] [som::grounding] Overlaid Set-of-Marks tags: 24 interactive controls badged [1..24]
+[2026-09-06 18:22:15.021] [stdio::out]     <-- {"grounded": true, "interactive_elements": 24, "cache_size_mb": 42.1}
+
+[2026-09-06 18:22:16.200] [stdio::in]      --> tools/call "browser_fast_fill"
+{
+  "fields": [
+    { "tag": 4, "value": "Ashutosh Chikane" },
+    { "tag": 7, "value": "chikaneashutosh65@gmail.com" },
+    { "tag": 9, "value": "Systems Architecture Inquiry" }
+  ]
+}
+[2026-09-06 18:22:16.202] [security::regex] Auditing field payloads: 0 API keys / 0 PAT secrets detected
+[2026-09-06 18:22:16.204] [cdp::dispatch] Synthetic DOM events dispatched (InputEvent + ChangeEvent) in 1 round-trip turn
+[2026-09-06 18:22:16.205] [stdio::out]     <-- {"success": true, "fields_filled": 3, "turns_saved": 8, "latency_ms": 1.6}`
+      },
       repoUrl: null,
       demoUrl: null,
       summary: 'Browser Vision PRO eliminates the critical failure modes of web agents: spatial coordinate hallucination, indirect prompt injection exploits, context window explosion, and slow multi-turn form filling. Powered by native Chrome/Edge binaries via CDP with zero external driver downloads.',
@@ -132,8 +171,15 @@ browser_fast_fill({
       badgeText: '🔒 Private Flagship OS',
       category: 'academic',
       tags: ['Rust Core (~100k LOC)', 'SvelteKit 2 (~50k LOC)', 'KaTeX Math', 'FSRS Spaced Repetition', 'Embedded Vector DB'],
-      image: 'assets/lectern_dashboard.png',
+      image: 'https://raw.githubusercontent.com/screen-watcher-elite/tensorforge/main/assets/lectern_dashboard.png',
+      fallbackImage: 'assets/lectern_dashboard.png',
       imageCaption: 'Lectern dark glassmorphic cockpit: multi-course syllabus mapping, active-recall viva simulator, and FSRS analytics.',
+      gallery: [
+        { label: 'Dashboard & Telemetry', url: 'https://raw.githubusercontent.com/screen-watcher-elite/tensorforge/main/assets/lectern_dashboard.png', fallback: 'assets/lectern_dashboard.png' },
+        { label: 'Mastery & FSRS Analytics', url: 'https://raw.githubusercontent.com/screen-watcher-elite/tensorforge/main/assets/lectern_mastery.png', fallback: 'assets/lectern_mastery.png' },
+        { label: 'Local AI Pipeline', url: 'https://raw.githubusercontent.com/screen-watcher-elite/tensorforge/main/assets/lectern_pipeline.png', fallback: 'assets/lectern_pipeline.png' },
+        { label: 'On-Device Models', url: 'https://raw.githubusercontent.com/screen-watcher-elite/tensorforge/main/assets/lectern_models.png', fallback: 'assets/lectern_models.png' }
+      ],
       repoUrl: null,
       demoUrl: null,
       summary: 'Lectern is a private, enterprise-scale academic workstation engineered to transform higher-education STEM learning, multi-course syllabus mapping, and active-recall oral viva defense. Powered by an ultra-fast Rust systems core with zero-copy AST parsing and an embedded vector index.',
@@ -186,7 +232,8 @@ struct SyllabusTopic {
       badgeText: '🌐 Open Source',
       category: 'alignment',
       tags: ['Constitutional AI', 'RLAIF', 'Word-Level Diffing', 'Zero Dependencies', 'Anthropic API', 'OpenRouter'],
-      image: 'assets/constitution_studio_showcase.png',
+      image: 'https://raw.githubusercontent.com/screen-watcher-elite/constitution-studio/main/assets/constitution_studio_showcase.png',
+      fallbackImage: 'assets/constitution_studio_showcase.png',
       imageCaption: 'Full visual execution of Anthropic Critique → Revision loop with live token diffing and harmlessness scorecards.',
       repoUrl: 'https://github.com/screen-watcher-elite/constitution-studio',
       demoUrl: null,
@@ -245,8 +292,15 @@ fetch('https://api.anthropic.com/v1/messages', {
       badgeText: '🌐 Open Source',
       category: 'visualization',
       tags: ['HTML5 Canvas API', '60 FPS', 'Reverse-Mode Autograd', 'Loss Surfaces', 'Eigenvalues', 'Pure Vanilla JS'],
-      image: 'assets/som_grounding_screenshot.png',
-      imageCaption: 'TensorForge mathematical sandbox: interactive autograd computational DAG and 3D loss surface projection.',
+      image: 'https://raw.githubusercontent.com/screen-watcher-elite/tensorforge/main/assets/tensorforge_showcase_transform.png',
+      fallbackImage: 'assets/tensorforge_showcase_transform.png',
+      imageCaption: 'TensorForge 2D Matrix Transformations: interactive linear transformations, eigensystems, and phase dynamics.',
+      gallery: [
+        { label: '2D Transformations', url: 'https://raw.githubusercontent.com/screen-watcher-elite/tensorforge/main/assets/tensorforge_showcase_transform.png', fallback: 'assets/tensorforge_showcase_transform.png' },
+        { label: 'LossLab Optimizers', url: 'https://raw.githubusercontent.com/screen-watcher-elite/tensorforge/main/assets/tensorforge_showcase_losslab.png', fallback: 'assets/tensorforge_showcase_losslab.png' },
+        { label: 'MicroGraph Autograd', url: 'https://raw.githubusercontent.com/screen-watcher-elite/tensorforge/main/assets/tensorforge_showcase_autograd.png', fallback: 'assets/tensorforge_showcase_autograd.png' },
+        { label: '3D VectorSpace', url: 'https://raw.githubusercontent.com/screen-watcher-elite/tensorforge/main/assets/tensorforge_showcase_3d.png', fallback: 'assets/tensorforge_showcase_3d.png' }
+      ],
       repoUrl: 'https://github.com/screen-watcher-elite/tensorforge',
       demoUrl: 'https://screen-watcher-elite.github.io/tensorforge/',
       summary: 'TensorForge is a zero-dependency, 60-FPS interactive mathematical sandbox for mastering deep learning foundations. It bridges abstract algebraic concepts with tactile visual intuition: loss surface topology, reverse-mode autograd DAGs, matrix transformations, and 3D vector spaces.',
@@ -296,8 +350,19 @@ function renderTransformedGrid(ctx, matrix, width, height) {
       badgeText: '🌐 Open Source',
       category: 'alignment',
       tags: ['AI Safety', 'HarmBench', 'TruthfulQA', 'WMDP Benchmark', 'arXiv Search', 'Model Context Protocol'],
-      image: 'assets/autonomous_architecture_diagram.png',
-      imageCaption: 'Alignment Sentinel MCP architecture: structured querying across 7 safety benchmarks and 11 taxonomy domains.',
+      image: null,
+      simulatedLog: {
+        title: 'alignment-sentinel-mcp ~ stdio protocol trace (JSON-RPC 2.0)',
+        status: 'Auditing: cs.AI / HarmBench v2',
+        content: `[2026-09-06 18:24:01.102] [stdio::in]  --> tools/call "alignment_search_arxiv" {"query": "representation engineering refusal", "max_results": 2}
+[2026-09-06 18:24:01.314] [audit::engine] Querying arXiv API (categories: cs.AI, cs.LG, cs.CR)...
+[2026-09-06 18:24:01.520] [audit::engine] Parsing 2 papers: arXiv:2310.01405 (Representation Engineering), arXiv:2401.06455
+[2026-09-06 18:24:01.522] [stdio::out] <-- {"status": "ok", "papers_indexed": 2, "taxonomy_tag": "Representation Engineering"}
+
+[2026-09-06 18:24:02.010] [stdio::in]  --> tools/call "alignment_get_benchmark" {"benchmark": "HarmBench"}
+[2026-09-06 18:24:02.045] [audit::benchmark] Extracted 510 functional test cases across 4 attack modalities (Direct, GCG, PAIR, TAP)
+[2026-09-06 18:24:02.048] [stdio::out] <-- {"benchmark": "HarmBench", "evaluated_models": 18, "standard_asr_baseline": "84.2%", "aligned_asr_claude": "4.1%"}`
+      },
       repoUrl: 'https://github.com/screen-watcher-elite/Alignment-MCP',
       demoUrl: null,
       summary: 'Alignment Sentinel is an open-source MCP server that equips frontier models with specialized research tools to search, analyze, and contextualize AI safety literature. Covers 7 major empirical benchmarks (HarmBench, TruthfulQA, WMDP, StrongREJECT, Machiavelli, AdvBench, DecodingTrust).',
@@ -347,8 +412,22 @@ server.tool(
       badgeText: '🌐 Open Source',
       category: 'academic',
       tags: ['TypeScript', 'LaTeX Synthesis', 'Linear Algebra Proofs', 'Tensor Shape Verification', 'TikZ Diagrams'],
-      image: 'assets/lectern_formulas.png',
-      imageCaption: 'ScholarTex mathematical derivation engine: step-by-step symbolic proofs and TikZ diagram generators.',
+      image: null,
+      simulatedLog: {
+        title: 'scholar-tex-mcp ~ mathematical verification pipeline (JSON-RPC 2.0)',
+        status: 'Active stdio • Einstein Summation Engine',
+        content: `[2026-09-06 18:25:12.440] [stdio::in]  --> tools/call "verify_matrix_dimensions"
+{
+  "operations": [
+    { "type": "matmul", "a": [32, 128, 768], "b": [768, 768] },
+    { "type": "layer_norm", "input": [32, 128, 768], "normalized_shape": [768] },
+    { "type": "attention_projection", "q": [32, 12, 128, 64], "k_transposed": [32, 12, 64, 128] }
+  ]
+}
+[2026-09-06 18:25:12.448] [scholar::core] Validating multi-head dimension broadcasting: [32, 12, 128, 64] x [32, 12, 64, 128] -> [32, 12, 128, 128]
+[2026-09-06 18:25:12.450] [scholar::core] Memory footprint computed: 1.57 MB / batch • Zero dimension mismatch detected
+[2026-09-06 18:25:12.452] [stdio::out] <-- {"verified": true, "output_shapes": ["[32, 128, 768]", "[32, 128, 768]", "[32, 12, 128, 128]"], "latex_eqn": "\\\\mathbf{A} = \\\\text{Softmax}\\\\left(\\\\frac{\\\\mathbf{Q}\\\\mathbf{K}^T}{\\\\sqrt{d_k}}\\\\right)"}`
+      },
       repoUrl: 'https://github.com/screen-watcher-elite/scholar-tex-mcp',
       demoUrl: null,
       summary: 'ScholarTex is an MCP server built for university coursework in Artificial Intelligence & Machine Learning. It provides AI agents with tools to derive step-by-step mathematical proofs, verify tensor shapes across matrix multiplications, and generate Overleaf-ready LaTeX documents.',
@@ -397,8 +476,19 @@ scholar_verify_matrix_dimensions({
       badgeText: '🌐 Open Source',
       category: 'academic',
       tags: ['TypeScript', 'WCE AI & ML Syllabus', 'PYQ Bank', 'Oral Viva Examiner', 'Conceptual Gap Analysis'],
-      image: 'assets/lectern_exam.png',
-      imageCaption: 'Active-recall viva simulation: dynamic oral interrogation on machine learning, backprop, and optimization.',
+      image: null,
+      simulatedLog: {
+        title: 'lectern-mcp ~ oral viva exam defense session (JSON-RPC 2.0)',
+        status: 'WCE B.Tech AI & ML Examination Board',
+        content: `[2026-09-06 18:26:00.012] [stdio::in]  --> tools/call "query_syllabus_pyq" {"course": "AIML-204", "unit": 3, "year": "2024"}
+[2026-09-06 18:26:00.038] [lectern::db] Retrieved Unit 3: "Convex Optimization, Karush-Kuhn-Tucker Conditions & Dual SVM"
+[2026-09-06 18:26:00.040] [lectern::db] Matching historical PYQ: "Derive the dual Lagrangian formulation for soft-margin SVM with slack variables"
+[2026-09-06 18:26:00.045] [stdio::out] <-- {"status": "ok", "unit_topics": 5, "pyqs_found": 3, "recommended_rigor": "rigorous"}
+
+[2026-09-06 18:26:01.120] [stdio::in]  --> tools/call "evaluate_conceptual_gap" {"topic": "KKT Complementary Slackness", "student_statement": "Slack variables are zero for all non-support vectors"}
+[2026-09-06 18:26:01.185] [lectern::viva] Conceptual Diagnostic: Student correctly identified alpha_i > 0 condition for support vectors, but overlooked margin violators (xi_i > 0)
+[2026-09-06 18:26:01.189] [stdio::out] <-- {"grade": "A-", "gap_identified": "Margin violator boundary slack", "counter_example_prompt": "Consider points where 0 < alpha_i < C"}`
+      },
       repoUrl: 'https://github.com/screen-watcher-elite/lectern-mcp',
       demoUrl: null,
       summary: 'The open-source companion to the Lectern OS. It equips AI models with tools to conduct active-recall viva exam sessions, query official university syllabi (Walchand College of Engineering B.Tech AI & ML), synthesize formula cheat sheets, and diagnose conceptual misconceptions with counter-examples.',
@@ -540,6 +630,50 @@ lectern_generate_viva_defense({
       </div>
     ` : '';
 
+    // Media or Simulated Terminal Log Box
+    let mediaHtml = '';
+    if (project.image) {
+      let galleryHtml = '';
+      if (project.gallery && project.gallery.length > 1) {
+        galleryHtml = `
+          <div class="media-gallery-strip">
+            <span class="gallery-label">Showcase Views:</span>
+            ${project.gallery.map((g, idx) => `
+              <button class="gallery-thumb-btn ${idx === 0 ? 'active' : ''}" data-url="${g.url}" data-fallback="${g.fallback || ''}" data-caption="${escapeHtml(g.label)}">
+                📷 ${escapeHtml(g.label)}
+              </button>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      mediaHtml = `
+        <div class="canvas-media-box">
+          <img id="main-showcase-img" src="${project.image}" alt="${project.title} Interface & Architecture" onerror="this.src='${project.fallbackImage || 'assets/constitution_studio_showcase.png'}'">
+          <div class="media-caption">
+            <span id="main-showcase-caption">${project.imageCaption || 'System Interface Overview'}</span>
+            <span>Verified Ground Truth • 2026</span>
+          </div>
+          ${galleryHtml}
+        </div>
+      `;
+    } else if (project.simulatedLog) {
+      mediaHtml = `
+        <div class="canvas-terminal-box">
+          <div class="terminal-chrome">
+            <div class="chrome-dots">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+            </div>
+            <div class="chrome-title">${escapeHtml(project.simulatedLog.title)}</div>
+            <div class="chrome-latency">● ${escapeHtml(project.simulatedLog.status)}</div>
+          </div>
+          <pre class="terminal-body"><code>${escapeHtml(project.simulatedLog.content)}</code></pre>
+        </div>
+      `;
+    }
+
     canvasContainer.style.opacity = '0';
     canvasContainer.style.transform = 'translateY(8px)';
 
@@ -554,13 +688,7 @@ lectern_generate_viva_defense({
           <div class="canvas-actions">${actionsHtml}</div>
         </div>
 
-        <div class="canvas-media-box">
-          <img src="${project.image}" alt="${project.title} Interface & Architecture" onerror="this.src='assets/constitution_studio_showcase.png'">
-          <div class="media-caption">
-            <span>${project.imageCaption}</span>
-            <span>Architecture Specification • 2026</span>
-          </div>
-        </div>
+        ${mediaHtml}
 
         <!-- Metrics Strip -->
         <div class="metrics-strip">${metricsHtml}</div>
@@ -584,6 +712,28 @@ lectern_generate_viva_defense({
           <pre><code>${project.codeSnippet}</code></pre>
         </div>
       `;
+
+      // Bind gallery thumbnail switcher if present
+      document.querySelectorAll('.gallery-thumb-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.gallery-thumb-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const mainImg = document.getElementById('main-showcase-img');
+          const caption = document.getElementById('main-showcase-caption');
+          const newUrl = btn.getAttribute('data-url');
+          const fallback = btn.getAttribute('data-fallback');
+          const label = btn.getAttribute('data-caption');
+          if (mainImg && newUrl) {
+            mainImg.src = newUrl;
+            if (fallback) {
+              mainImg.onerror = () => { mainImg.src = fallback; };
+            }
+          }
+          if (caption && label) {
+            caption.textContent = `${project.title}: ${label}`;
+          }
+        });
+      });
 
       canvasContainer.style.opacity = '1';
       canvasContainer.style.transform = 'translateY(0)';
