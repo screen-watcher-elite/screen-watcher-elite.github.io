@@ -117,7 +117,7 @@ desktop_click_text({
 browser_fast_fill({
   "fields": [
     { "tag": 3, "value": "Ashutosh Chikane" },
-    { "tag": 5, "value": "ashutoshchikane@gmail.com" },
+    { "tag": 5, "value": "chikaneashutosh65@gmail.com" },
     { "tag": 8, "value": "Frontier systems architecture inquiry regarding MCP engines." }
   ]
 })`
@@ -501,7 +501,7 @@ lectern_generate_viva_defense({
     if (project.tier === 'private') {
       actionsHtml = `
         <span class="btn btn-private-badge">🔒 Private Frontier Repository</span>
-        <a href="mailto:ashutoshchikane@gmail.com?subject=Architecture%20Inquiry%20-%20${encodeURIComponent(project.title)}" class="btn btn-primary">✉️ Request Architecture Brief</a>
+        <a href="mailto:chikaneashutosh65@gmail.com?subject=Architecture%20Inquiry%20-%20${encodeURIComponent(project.title)}" class="btn btn-primary">✉️ Request Architecture Brief</a>
       `;
     } else {
       if (project.demoUrl) {
@@ -590,7 +590,11 @@ lectern_generate_viva_defense({
     }, 150);
 
     // Sync URL hash
-    window.location.hash = project.id;
+    if (history.replaceState) {
+      history.replaceState(null, null, '#' + project.id);
+    } else {
+      window.location.hash = project.id;
+    }
   }
 
   function selectProject(id) {
@@ -673,7 +677,7 @@ lectern_generate_viva_defense({
 
     fast_fill: {
       tool: 'browser_fast_fill',
-      params: { fields: [{ tag: 1, value: "Ashutosh Chikane" }, { tag: 2, value: "ashutoshchikane@gmail.com" }] },
+      params: { fields: [{ tag: 1, value: "Ashutosh Chikane" }, { tag: 2, value: "chikaneashutosh65@gmail.com" }] },
       logs: [
         { prefix: 'rpc', text: '--> tools/call "browser_fast_fill" (2 fields simultaneously)' },
         { prefix: 'rust', text: '[BrowserVisionPRO::FastFill] Intercepting Secret Regex: 0 credentials detected' },
@@ -774,18 +778,38 @@ lectern_generate_viva_defense({
   });
 
   // ════════════════════════════════════════════════════════════════════════════
-  // 5. Initial Bootstrapping
+  // 5. Initial Bootstrapping & Deep Link Auto-Scroll
   // ════════════════════════════════════════════════════════════════════════════
-  function init() {
-    renderTabs();
+  function scrollToProjects() {
+    const el = document.getElementById('project-canvas');
+    if (el) {
+      const topOffset = el.getBoundingClientRect().top + window.pageYOffset - 90;
+      window.scrollTo({ top: topOffset, behavior: 'smooth' });
+    }
+  }
 
-    // Check hash in URL
+  function handleHashChange() {
     const hash = window.location.hash.replace('#', '');
     if (hash && PROJECTS.some(p => p.id === hash)) {
       selectProject(hash);
+      setTimeout(scrollToProjects, 200);
+    }
+  }
+
+  function init() {
+    renderTabs();
+
+    // Check hash in URL on page load
+    const hash = window.location.hash.replace('#', '');
+    if (hash && PROJECTS.some(p => p.id === hash)) {
+      selectProject(hash);
+      setTimeout(scrollToProjects, 350);
     } else {
       selectProject('omnidesk');
     }
+
+    // Listen for hash changes (e.g. back/forward, deep links)
+    window.addEventListener('hashchange', handleHashChange);
 
     // Initial terminal greeting
     appendTerminalLog('rust', 'OmniDesk MCP Host v2.1.0 (Windows PE x64 Native)');
