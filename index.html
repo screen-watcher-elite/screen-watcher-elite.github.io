@@ -23,9 +23,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="style.css">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <link rel="stylesheet" href="style.css?v=20260906-4">
 </head>
 <body>
+  <!-- Interactive Neural & Matrix Canvases -->
+  <canvas id="neural-canvas" class="neural-canvas"></canvas>
+  <canvas id="matrix-rain-canvas" class="matrix-rain-canvas"></canvas>
+
   <!-- Ambient Glow Elements -->
   <div class="glow-orb orb-1"></div>
   <div class="glow-orb orb-2"></div>
@@ -53,6 +60,20 @@
         <a href="#projects" class="nav-link active">Projects</a>
         <a href="#terminal" class="nav-link">MCP Terminal</a>
         <a href="#about" class="nav-link">About</a>
+        
+        <!-- Interactive Controls -->
+        <div class="nav-interactive-group">
+          <div class="theme-switcher" title="Select Ambient Theme">
+            <button class="theme-dot theme-indigo active" data-theme="indigo" title="Quantum Indigo"></button>
+            <button class="theme-dot theme-cyan" data-theme="cyan" title="Cyber Cyan"></button>
+            <button class="theme-dot theme-emerald" data-theme="emerald" title="Matrix Emerald"></button>
+            <button class="theme-dot theme-rose" data-theme="rose" title="Anthropic Rose"></button>
+          </div>
+          <button class="sfx-toggle-btn active" id="btn-toggle-sfx" title="Toggle Sound Effects">🔊 SFX</button>
+          <button class="quick-cmd-btn" id="btn-open-cmd" title="Command Palette (Ctrl+K)"><kbd>⌘K</kbd></button>
+          <button class="quick-cmd-btn" id="btn-open-shortcuts" title="Keyboard Shortcuts (?)"><kbd>?</kbd></button>
+        </div>
+
         <a href="https://github.com/screen-watcher-elite" target="_blank" rel="noreferrer" class="social-btn" title="GitHub Profile">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
         </a>
@@ -163,6 +184,13 @@
         <div class="terminal-output" id="terminal-output">
           <!-- Terminal logs rendered dynamically -->
         </div>
+
+        <!-- Real Interactive Command Input Line -->
+        <form class="terminal-input-bar" id="terminal-cmd-form">
+          <span class="prompt-user">guest@mcp-runner</span>:<span class="prompt-path">~</span><span class="prompt-dollar">$</span>
+          <input type="text" id="terminal-input" class="terminal-cmd-input" placeholder="Type a command (try 'help', 'bench', 'ghost Hello', 'som', 'matrix', 'clear', 'matrix-rain')..." autocomplete="off" spellcheck="false">
+          <button type="submit" class="cmd-run-btn">Execute ↵</button>
+        </form>
       </div>
     </section>
 
@@ -270,6 +298,44 @@ git push -u origin main</code></pre>
     </div>
   </footer>
 
-  <script src="app.js"></script>
+  <!-- Command Palette Modal (Ctrl+K) -->
+  <div class="cmd-palette-modal" id="cmd-palette-modal">
+    <div class="cmd-palette-box">
+      <div class="cmd-search-bar">
+        <span class="cmd-icon">⚡</span>
+        <input type="text" id="cmd-palette-input" placeholder="Type a command or project name (e.g. 'tensorforge', 'ghost', 'theme', 'bench')..." autocomplete="off">
+        <kbd class="esc-kbd">ESC</kbd>
+      </div>
+      <div class="cmd-results" id="cmd-results">
+        <!-- Populated dynamically -->
+      </div>
+      <div class="cmd-footer">
+        <span>Navigate <kbd>↑</kbd> <kbd>↓</kbd></span>
+        <span>Run <kbd>↵</kbd></span>
+        <span>Shortcuts: <kbd>1</kbd>–<kbd>8</kbd> Tabs • <kbd>T</kbd> Terminal • <kbd>M</kbd> SFX</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Keyboard Shortcuts Help Modal (?) -->
+  <div class="shortcuts-modal" id="shortcuts-modal">
+    <div class="shortcuts-content">
+      <div class="modal-header">
+        <h3>⚡ Power User Shortcuts</h3>
+        <button class="modal-close" id="btn-close-shortcuts">&times;</button>
+      </div>
+      <div class="shortcuts-grid">
+        <div class="shortcut-row"><kbd>1</kbd>–<kbd>8</kbd> <span>Select Project Showcase Tab directly</span></div>
+        <div class="shortcut-row"><kbd>Ctrl</kbd>+<kbd>K</kbd> / <kbd>⌘K</kbd> <span>Open Interactive Command Palette</span></div>
+        <div class="shortcut-row"><kbd>T</kbd> <span>Scroll to Interactive MCP Terminal</span></div>
+        <div class="shortcut-row"><kbd>P</kbd> <span>Scroll to Projects Showcase Canvas</span></div>
+        <div class="shortcut-row"><kbd>M</kbd> <span>Toggle Synthesized Audio Feedback (SFX)</span></div>
+        <div class="shortcut-row"><kbd>?</kbd> <span>Toggle this Keyboard Shortcuts guide</span></div>
+        <div class="shortcut-row"><kbd>Esc</kbd> <span>Dismiss open modals</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js?v=20260906-4"></script>
 </body>
 </html>

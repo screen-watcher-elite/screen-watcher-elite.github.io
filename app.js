@@ -7,6 +7,78 @@
   'use strict';
 
   // ════════════════════════════════════════════════════════════════════════════
+  // 0. Synthesized Web Audio Sound Engine (Zero external assets)
+  // ════════════════════════════════════════════════════════════════════════════
+  const SoundEngine = {
+    ctx: null,
+    enabled: true,
+    init() {
+      if (!this.ctx) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) this.ctx = new AudioCtx();
+      }
+    },
+    click() {
+      if (!this.enabled) return;
+      this.init();
+      if (!this.ctx) return;
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      try {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(700, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(350, this.ctx.currentTime + 0.035);
+        gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.035);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.035);
+      } catch (e) {}
+    },
+    success() {
+      if (!this.enabled) return;
+      this.init();
+      if (!this.ctx) return;
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      try {
+        [523.25, 659.25, 783.99].forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.06);
+          gain.gain.setValueAtTime(0.04, this.ctx.currentTime + idx * 0.06);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + idx * 0.06 + 0.08);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + idx * 0.06);
+          osc.stop(this.ctx.currentTime + idx * 0.06 + 0.08);
+        });
+      } catch (e) {}
+    },
+    laser() {
+      if (!this.enabled) return;
+      this.init();
+      if (!this.ctx) return;
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      try {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(1100, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(120, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.03, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.1);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.1);
+      } catch (e) {}
+    }
+  };
+
+  // ════════════════════════════════════════════════════════════════════════════
   // 1. Projects Master Database
   // ════════════════════════════════════════════════════════════════════════════
   const PROJECTS = [
@@ -292,14 +364,14 @@ fetch('https://api.anthropic.com/v1/messages', {
       badgeText: '🌐 Open Source',
       category: 'visualization',
       tags: ['HTML5 Canvas API', '60 FPS', 'Reverse-Mode Autograd', 'Loss Surfaces', 'Eigenvalues', 'Pure Vanilla JS'],
-      image: 'https://raw.githubusercontent.com/screen-watcher-elite/tensorforge/main/assets/tensorforge_showcase_transform.png',
-      fallbackImage: 'assets/tensorforge_showcase_transform.png',
+      image: 'https://raw.githubusercontent.com/screen-watcher-elite/tensorforge/main/assets/tensorforge_showcase_transform.png?v=20260906-4',
+      fallbackImage: 'assets/tensorforge_showcase_transform.png?v=20260906-4',
       imageCaption: 'TensorForge 2D Matrix Transformations: interactive linear transformations, eigensystems, and phase dynamics.',
       gallery: [
-        { label: '2D Transformations', url: 'https://raw.githubusercontent.com/screen-watcher-elite/tensorforge/main/assets/tensorforge_showcase_transform.png', fallback: 'assets/tensorforge_showcase_transform.png' },
-        { label: 'LossLab Optimizers', url: 'https://raw.githubusercontent.com/screen-watcher-elite/tensorforge/main/assets/tensorforge_showcase_losslab.png', fallback: 'assets/tensorforge_showcase_losslab.png' },
-        { label: 'MicroGraph Autograd', url: 'https://raw.githubusercontent.com/screen-watcher-elite/tensorforge/main/assets/tensorforge_showcase_autograd.png', fallback: 'assets/tensorforge_showcase_autograd.png' },
-        { label: '3D VectorSpace', url: 'https://raw.githubusercontent.com/screen-watcher-elite/tensorforge/main/assets/tensorforge_showcase_3d.png', fallback: 'assets/tensorforge_showcase_3d.png' }
+        { label: '2D Transformations', url: 'https://raw.githubusercontent.com/screen-watcher-elite/tensorforge/main/assets/tensorforge_showcase_transform.png?v=20260906-4', fallback: 'assets/tensorforge_showcase_transform.png?v=20260906-4' },
+        { label: 'LossLab Optimizers', url: 'https://raw.githubusercontent.com/screen-watcher-elite/tensorforge/main/assets/tensorforge_showcase_losslab.png?v=20260906-4', fallback: 'assets/tensorforge_showcase_losslab.png?v=20260906-4' },
+        { label: 'MicroGraph Autograd', url: 'https://raw.githubusercontent.com/screen-watcher-elite/tensorforge/main/assets/tensorforge_showcase_autograd.png?v=20260906-4', fallback: 'assets/tensorforge_showcase_autograd.png?v=20260906-4' },
+        { label: '3D VectorSpace', url: 'https://raw.githubusercontent.com/screen-watcher-elite/tensorforge/main/assets/tensorforge_showcase_3d.png?v=20260906-4', fallback: 'assets/tensorforge_showcase_3d.png?v=20260906-4' }
       ],
       repoUrl: 'https://github.com/screen-watcher-elite/tensorforge',
       demoUrl: 'https://screen-watcher-elite.github.io/tensorforge/',
@@ -668,8 +740,50 @@ lectern_generate_viva_defense({
             </div>
             <div class="chrome-title">${escapeHtml(project.simulatedLog.title)}</div>
             <div class="chrome-latency">● ${escapeHtml(project.simulatedLog.status)}</div>
-          </div>
           <pre class="terminal-body"><code>${escapeHtml(project.simulatedLog.content)}</code></pre>
+        </div>
+      `;
+    }
+
+    // Mini-TensorForge Interactive Math Lab Widget
+    let miniLabHtml = '';
+    if (project.id === 'tensorforge') {
+      miniLabHtml = `
+        <div class="mini-lab-card">
+          <div class="mini-lab-header">
+            <div class="mini-lab-title">🎮 Interactive 2D Matrix Playground (Live 60-FPS Canvas)</div>
+            <div class="mini-lab-presets">
+              <button class="mini-preset-btn active" data-a="1" data-b="0" data-c="0" data-d="1">Identity [I]</button>
+              <button class="mini-preset-btn" data-a="1" data-b="1" data-c="0" data-d="1">Shear X</button>
+              <button class="mini-preset-btn" data-a="0.707" data-b="-0.707" data-c="0.707" data-d="0.707">Rotate 45°</button>
+              <button class="mini-preset-btn" data-a="1.5" data-b="0" data-c="0" data-d="0.5">Eigen Stretch</button>
+              <button class="mini-preset-btn" data-a="1" data-b="1" data-c="1" data-d="1">Singular Collapse</button>
+            </div>
+          </div>
+          <div class="mini-lab-body">
+            <canvas id="mini-tf-canvas" width="480" height="220" class="mini-tf-canvas"></canvas>
+            <div class="mini-lab-controls">
+              <div class="matrix-input-grid">
+                <div class="matrix-bracket left"></div>
+                <div class="matrix-cells">
+                  <div class="matrix-cell-row">
+                    <label>a: <input type="number" id="mat-a" step="0.1" value="1.0" class="mat-input"></label>
+                    <label>b: <input type="number" id="mat-b" step="0.1" value="0.0" class="mat-input"></label>
+                  </div>
+                  <div class="matrix-cell-row">
+                    <label>c: <input type="number" id="mat-c" step="0.1" value="0.0" class="mat-input"></label>
+                    <label>d: <input type="number" id="mat-d" step="0.1" value="1.0" class="mat-input"></label>
+                  </div>
+                </div>
+                <div class="matrix-bracket right"></div>
+              </div>
+              <div class="matrix-telemetry">
+                <div>Determinant: <span id="mat-det" class="det-val">det(A) = 1.00</span></div>
+                <div>Area Scale: <span id="mat-area" class="area-val">100%</span></div>
+                <div id="mat-status" class="status-val text-emerald">✓ Non-singular (Invertible Transformation)</div>
+              </div>
+            </div>
+          </div>
         </div>
       `;
     }
@@ -689,6 +803,7 @@ lectern_generate_viva_defense({
         </div>
 
         ${mediaHtml}
+        ${miniLabHtml}
 
         <!-- Metrics Strip -->
         <div class="metrics-strip">${metricsHtml}</div>
@@ -718,6 +833,7 @@ lectern_generate_viva_defense({
         btn.addEventListener('click', () => {
           document.querySelectorAll('.gallery-thumb-btn').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
+          SoundEngine.click();
           const mainImg = document.getElementById('main-showcase-img');
           const caption = document.getElementById('main-showcase-caption');
           const newUrl = btn.getAttribute('data-url');
@@ -734,6 +850,11 @@ lectern_generate_viva_defense({
           }
         });
       });
+
+      // Initialize mini lab canvas if on TensorForge
+      if (project.id === 'tensorforge') {
+        initMiniTensorForgeCanvas();
+      }
 
       canvasContainer.style.opacity = '1';
       canvasContainer.style.transform = 'translateY(0)';
@@ -928,6 +1049,666 @@ lectern_generate_viva_defense({
   });
 
   // ════════════════════════════════════════════════════════════════════════════
+  // 4b. Interactive Mini-TensorForge 2D Matrix Canvas Engine
+  // ════════════════════════════════════════════════════════════════════════════
+  function initMiniTensorForgeCanvas() {
+    const canvas = document.getElementById('mini-tf-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    let mat = { a: 1.0, b: 0.0, c: 0.0, d: 1.0 };
+
+    const inA = document.getElementById('mat-a');
+    const inB = document.getElementById('mat-b');
+    const inC = document.getElementById('mat-c');
+    const inD = document.getElementById('mat-d');
+    const detEl = document.getElementById('mat-det');
+    const areaEl = document.getElementById('mat-area');
+    const statusEl = document.getElementById('mat-status');
+
+    function update() {
+      if (inA) mat.a = parseFloat(inA.value) || 0;
+      if (inB) mat.b = parseFloat(inB.value) || 0;
+      if (inC) mat.c = parseFloat(inC.value) || 0;
+      if (inD) mat.d = parseFloat(inD.value) || 0;
+
+      const det = mat.a * mat.d - mat.b * mat.c;
+      if (detEl) detEl.textContent = `det(A) = ${det.toFixed(2)}`;
+      if (areaEl) areaEl.textContent = `${Math.abs(det * 100).toFixed(0)}%`;
+      if (statusEl) {
+        if (Math.abs(det) < 0.001) {
+          statusEl.textContent = '⚠️ Singular (Determinant = 0, Dimensional Collapse!)';
+          statusEl.className = 'status-val text-rose';
+        } else {
+          statusEl.textContent = '✓ Non-singular (Invertible Transformation)';
+          statusEl.className = 'status-val text-emerald';
+        }
+      }
+      render();
+    }
+
+    function render() {
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      const ox = w / 2;
+      const oy = h / 2;
+      const scale = 48;
+
+      // Draw background Cartesian grid
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.lineWidth = 1;
+      for (let x = -5; x <= 5; x++) {
+        ctx.beginPath();
+        ctx.moveTo(ox + x * scale, 0);
+        ctx.lineTo(ox + x * scale, h);
+        ctx.stroke();
+      }
+      for (let y = -3; y <= 3; y++) {
+        ctx.beginPath();
+        ctx.moveTo(0, oy + y * scale);
+        ctx.lineTo(w, oy + y * scale);
+        ctx.stroke();
+      }
+
+      // Transformed Grid Lines
+      ctx.strokeStyle = 'rgba(99, 102, 241, 0.28)';
+      ctx.lineWidth = 1.2;
+      for (let i = -4; i <= 4; i++) {
+        const x1 = ox + (i * mat.b - 5 * mat.a) * scale;
+        const y1 = oy - (i * mat.d - 5 * mat.c) * scale;
+        const x2 = ox + (i * mat.b + 5 * mat.a) * scale;
+        const y2 = oy - (i * mat.d + 5 * mat.c) * scale;
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+
+        const x3 = ox + (i * mat.a - 5 * mat.b) * scale;
+        const y3 = oy - (i * mat.c - 5 * mat.d) * scale;
+        const x4 = ox + (i * mat.a + 5 * mat.b) * scale;
+        const y4 = oy - (i * mat.c + 5 * mat.d) * scale;
+        ctx.beginPath();
+        ctx.moveTo(x3, y3);
+        ctx.lineTo(x4, y4);
+        ctx.stroke();
+      }
+
+      // Transformed Unit Square Area (det)
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.22)';
+      ctx.beginPath();
+      ctx.moveTo(ox, oy);
+      ctx.lineTo(ox + mat.a * scale, oy - mat.c * scale);
+      ctx.lineTo(ox + (mat.a + mat.b) * scale, oy - (mat.c + mat.d) * scale);
+      ctx.lineTo(ox + mat.b * scale, oy - mat.d * scale);
+      ctx.closePath();
+      ctx.fill();
+
+      // Coordinate axes
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(0, oy); ctx.lineTo(w, oy);
+      ctx.moveTo(ox, 0); ctx.lineTo(ox, h);
+      ctx.stroke();
+
+      // Vector i-hat (coral)
+      drawVector(ctx, ox, oy, ox + mat.a * scale, oy - mat.c * scale, '#f43f5e', 'î');
+      // Vector j-hat (cyan)
+      drawVector(ctx, ox, oy, ox + mat.b * scale, oy - mat.d * scale, '#38bdf8', 'ĵ');
+    }
+
+    function drawVector(ctx, x1, y1, x2, y2, color, label) {
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+
+      const angle = Math.atan2(y2 - y1, x2 - x1);
+      const arrowLen = 9;
+      ctx.beginPath();
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 - arrowLen * Math.cos(angle - Math.PI / 6), y2 - arrowLen * Math.sin(angle - Math.PI / 6));
+      ctx.lineTo(x2 - arrowLen * Math.cos(angle + Math.PI / 6), y2 - arrowLen * Math.sin(angle + Math.PI / 6));
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.font = 'bold 12px monospace';
+      ctx.fillText(label, x2 + 6, y2 - 4);
+    }
+
+    [inA, inB, inC, inD].forEach(inp => {
+      if (inp) {
+        inp.addEventListener('input', () => {
+          SoundEngine.click();
+          update();
+        });
+      }
+    });
+
+    document.querySelectorAll('.mini-preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mini-preset-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if (inA) inA.value = btn.getAttribute('data-a');
+        if (inB) inB.value = btn.getAttribute('data-b');
+        if (inC) inC.value = btn.getAttribute('data-c');
+        if (inD) inD.value = btn.getAttribute('data-d');
+        SoundEngine.laser();
+        update();
+      });
+    });
+
+    update();
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 4c. Interactive Neural Particle Field Background
+  // ════════════════════════════════════════════════════════════════════════════
+  function initNeuralBackground() {
+    const canvas = document.getElementById('neural-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const mouse = { x: -1000, y: -1000 };
+    window.addEventListener('mousemove', e => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+    window.addEventListener('mouseleave', () => {
+      mouse.x = -1000;
+      mouse.y = -1000;
+    });
+
+    const ripples = [];
+    window.addEventListener('click', e => {
+      ripples.push({ x: e.clientX, y: e.clientY, r: 0, maxR: 180, alpha: 0.6 });
+    });
+
+    const particleCount = Math.min(45, Math.floor((width * height) / 28000));
+    const particles = [];
+    for (let i = 0; i < particleCount; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.6,
+        vy: (Math.random() - 0.5) * 0.6,
+        radius: Math.random() * 2 + 1
+      });
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+
+      // Render expanding ripples
+      for (let rIdx = ripples.length - 1; rIdx >= 0; rIdx--) {
+        const rip = ripples[rIdx];
+        rip.r += 4;
+        rip.alpha -= 0.015;
+        if (rip.alpha <= 0 || rip.r >= rip.maxR) {
+          ripples.splice(rIdx, 1);
+          continue;
+        }
+        ctx.strokeStyle = `rgba(56, 189, 248, ${rip.alpha})`;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(rip.x, rip.y, rip.r, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      // Update and render particles
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0) p.x = width;
+        if (p.x > width) p.x = 0;
+        if (p.y < 0) p.y = height;
+        if (p.y > height) p.y = 0;
+
+        // Mouse avoidance/influence
+        const dx = mouse.x - p.x;
+        const dy = mouse.y - p.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 130) {
+          p.x -= (dx / dist) * 1.5;
+          p.y -= (dy / dist) * 1.5;
+
+          ctx.strokeStyle = `rgba(99, 102, 241, ${(1 - dist / 130) * 0.4})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(mouse.x, mouse.y);
+          ctx.stroke();
+        }
+
+        // Draw particle node
+        ctx.fillStyle = 'rgba(165, 180, 252, 0.45)';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Connect adjacent particles
+        for (let j = i + 1; j < particles.length; j++) {
+          const p2 = particles[j];
+          const dist2 = Math.hypot(p.x - p2.x, p.y - p2.y);
+          if (dist2 < 115) {
+            ctx.strokeStyle = `rgba(99, 102, 241, ${(1 - dist2 / 115) * 0.22})`;
+            ctx.lineWidth = 0.8;
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 4d. Interactive Theme Switcher
+  // ════════════════════════════════════════════════════════════════════════════
+  function initThemeSwitcher() {
+    const dots = document.querySelectorAll('.theme-dot');
+    const savedTheme = localStorage.getItem('portfolio-theme') || 'indigo';
+
+    function setTheme(theme) {
+      if (theme === 'indigo') {
+        document.body.removeAttribute('data-theme');
+      } else {
+        document.body.setAttribute('data-theme', theme);
+      }
+      dots.forEach(d => {
+        d.classList.toggle('active', d.getAttribute('data-theme') === theme);
+      });
+      localStorage.setItem('portfolio-theme', theme);
+    }
+
+    setTheme(savedTheme);
+
+    dots.forEach(dot => {
+      dot.addEventListener('click', () => {
+        const t = dot.getAttribute('data-theme');
+        SoundEngine.click();
+        setTheme(t);
+      });
+    });
+
+    return setTheme;
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 4e. Matrix Digital Rain Easter Egg
+  // ════════════════════════════════════════════════════════════════════════════
+  function triggerMatrixRain() {
+    const canvas = document.getElementById('matrix-rain-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    SoundEngine.laser();
+    canvas.classList.add('active');
+
+    let w = (canvas.width = window.innerWidth);
+    let h = (canvas.height = window.innerHeight);
+
+    const cols = Math.floor(w / 20) + 1;
+    const ypos = Array(cols).fill(0);
+    const chars = '0123456789ABCDEF01λ∇∂Ax=bdet(A)∑∮RustMCP';
+
+    let frameCount = 0;
+    const interval = setInterval(() => {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.fillStyle = '#10b981';
+      ctx.font = '15pt monospace';
+
+      ypos.forEach((y, ind) => {
+        const text = chars.charAt(Math.floor(Math.random() * chars.length));
+        const x = ind * 20;
+        ctx.fillText(text, x, y);
+
+        if (y > 100 + Math.random() * 10000) ypos[ind] = 0;
+        else ypos[ind] = y + 20;
+      });
+
+      frameCount++;
+      if (frameCount > 180) { // ~6 seconds at 30fps
+        clearInterval(interval);
+        canvas.classList.remove('active');
+        ctx.clearRect(0, 0, w, h);
+        appendTerminalLog('ok', '🎉 [EASTER EGG] Matrix Neural Stream sequence concluded.');
+      }
+    }, 33);
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 4f. Interactive Terminal Real-Time Command Processor
+  // ════════════════════════════════════════════════════════════════════════════
+  function initTerminalInput(setThemeFn) {
+    const form = document.getElementById('terminal-cmd-form');
+    const input = document.getElementById('terminal-input');
+    if (!form || !input) return;
+
+    function runBenchmark() {
+      appendTerminalLog('rpc', '--> RUNNING BENCHMARK SUITE: Win32 Syscalls, WinRT OCR, Visual Diff');
+      const steps = [
+        { prefix: 'rust', text: '[Bench 1/4] Win32 PostMessageW throughput: 28,450 msgs/sec (< 0.035ms latency)' },
+        { prefix: 'rust', text: '[Bench 2/4] Hardware WinRT OCR engine: 1080p scanned in 21.4ms (192 text nodes)' },
+        { prefix: 'rust', text: '[Bench 3/4] 500MB Rolling Diff Engine: 89.2% vision token reduction' },
+        { prefix: 'ok', text: '<-- {"benchmark": "PASSED", "grade": "SOTA", "host_ram_used": "7.4 MB"}' }
+      ];
+      steps.forEach((s, idx) => {
+        setTimeout(() => {
+          SoundEngine.click();
+          appendTerminalLog(s.prefix, s.text);
+        }, (idx + 1) * 350);
+      });
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const raw = input.value.trim();
+      if (!raw) return;
+      input.value = '';
+
+      SoundEngine.click();
+
+      // Display command line
+      appendTerminalLog('cmd', `$ ${raw}`);
+
+      const parts = raw.split(' ');
+      const cmd = parts[0].toLowerCase();
+      const arg = parts.slice(1).join(' ');
+
+      switch (cmd) {
+        case 'help':
+          appendTerminalLog('ok', 'Available interactive commands:');
+          appendTerminalLog('rpc', '  bench               - Run real-time latency & throughput benchmark');
+          appendTerminalLog('rpc', '  ghost <text>        - Simulate zero-focus background typing with custom text');
+          appendTerminalLog('rpc', '  som                 - Trigger Set-of-Marks visual DOM grounding scan');
+          appendTerminalLog('rpc', '  matrix              - Compute 2x2 matrix transformation & eigensystem');
+          appendTerminalLog('rpc', '  arxiv <topic>       - Search simulated AI safety arXiv research papers');
+          appendTerminalLog('rpc', '  theme <name>        - Switch theme (indigo, cyan, emerald, rose)');
+          appendTerminalLog('rpc', '  sfx                 - Toggle audio synthesized feedback');
+          appendTerminalLog('rpc', '  clear               - Clear terminal log output');
+          appendTerminalLog('rpc', '  matrix-rain         - [Easter Egg] Trigger falling digital matrix rain');
+          break;
+
+        case 'bench':
+          runBenchmark();
+          break;
+
+        case 'ghost': {
+          const userText = arg || 'Hello from visitor terminal';
+          appendTerminalLog('rpc', `--> tools/call "desktop_ghost_type" text="${escapeHtml(userText)}"`);
+          setTimeout(() => {
+            appendTerminalLog('rust', `[OmniDesk::GhostInput] Dispatched ${userText.length} chars to HWND 0x00120C14 without moving mouse cursor`);
+            appendTerminalLog('ok', `<-- {"success": true, "chars": ${userText.length}, "focus_stolen": false, "latency_us": 68}`);
+            SoundEngine.success();
+          }, 300);
+          break;
+        }
+
+        case 'som':
+          simulateDispatch('browser_inspect');
+          break;
+
+        case 'matrix':
+          appendTerminalLog('rpc', '--> tools/call "scholar_verify_matrix_dimensions" (Transform test)');
+          setTimeout(() => {
+            appendTerminalLog('rust', '[ScholarTex] Validated 2x2 eigensystem: det(A)=1.00, tr(A)=2.00, real eigenvalues [1.00, 1.00]');
+            appendTerminalLog('ok', '<-- {"verified": true, "orientation": "preserved", "orthogonal": true}');
+            SoundEngine.success();
+          }, 350);
+          break;
+
+        case 'arxiv': {
+          const q = arg || 'representation engineering';
+          appendTerminalLog('rpc', `--> tools/call "alignment_search_arxiv" query="${escapeHtml(q)}"`);
+          setTimeout(() => {
+            appendTerminalLog('rust', `[AlignmentSentinel] Queried cs.AI/cs.LG: Found 3 relevant empirical safety papers`);
+            appendTerminalLog('ok', `<-- {"papers": ["arXiv:2310.01405", "arXiv:2401.06455"], "status": "indexed"}`);
+            SoundEngine.success();
+          }, 400);
+          break;
+        }
+
+        case 'theme':
+          if (['indigo', 'cyan', 'emerald', 'rose'].includes(arg.toLowerCase())) {
+            setThemeFn(arg.toLowerCase());
+            appendTerminalLog('ok', `Switched theme to "${arg.toLowerCase()}".`);
+            SoundEngine.success();
+          } else {
+            appendTerminalLog('warn', 'Unknown theme. Choose from: indigo, cyan, emerald, rose');
+          }
+          break;
+
+        case 'sfx': {
+          SoundEngine.enabled = !SoundEngine.enabled;
+          const sfxBtn = document.getElementById('btn-toggle-sfx');
+          if (sfxBtn) {
+            sfxBtn.textContent = SoundEngine.enabled ? '🔊 SFX' : '🔇 SFX';
+            sfxBtn.classList.toggle('active', SoundEngine.enabled);
+          }
+          appendTerminalLog('ok', `Synthesized SFX audio: ${SoundEngine.enabled ? 'ENABLED' : 'MUTED'}`);
+          break;
+        }
+
+        case 'clear':
+          terminalOutput.innerHTML = '';
+          appendTerminalLog('rust', 'Terminal cleared. MCP stdio stream listening on channel 0...');
+          break;
+
+        case 'matrix-rain':
+          triggerMatrixRain();
+          break;
+
+        default:
+          appendTerminalLog('warn', `Command not recognized: "${escapeHtml(cmd)}". Type "help" to view valid commands.`);
+          break;
+      }
+    });
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 4g. Interactive Command Palette (Ctrl+K)
+  // ════════════════════════════════════════════════════════════════════════════
+  function initCommandPalette(setThemeFn) {
+    const modal = document.getElementById('cmd-palette-modal');
+    const input = document.getElementById('cmd-palette-input');
+    const resultsContainer = document.getElementById('cmd-results');
+    const btnOpen = document.getElementById('btn-open-cmd');
+    if (!modal || !input || !resultsContainer) return;
+
+    const COMMAND_ITEMS = [
+      { id: 'tf-tab', title: 'TensorForge 60-FPS Sandbox', category: 'Project', icon: '🌀', action: () => selectProject('tensorforge') },
+      { id: 'omnidesk-tab', title: 'OmniDesk MCP (OmniComputer)', category: 'Project', icon: '🔒', action: () => selectProject('omnidesk') },
+      { id: 'bvp-tab', title: 'Browser Vision PRO MCP', category: 'Project', icon: '🔒', action: () => selectProject('browser-vision-pro') },
+      { id: 'lectern-tab', title: 'Lectern Academic OS', category: 'Project', icon: '🔒', action: () => selectProject('lectern') },
+      { id: 'cai-tab', title: 'Constitution Studio (CAI)', category: 'Project', icon: '⚖️', action: () => selectProject('constitution-studio') },
+      { id: 'align-tab', title: 'Alignment Sentinel MCP', category: 'Project', icon: '🛡️', action: () => selectProject('alignment-mcp') },
+      { id: 'scholar-tab', title: 'ScholarTex MCP (Proofs & LaTeX)', category: 'Project', icon: '📐', action: () => selectProject('scholar-tex') },
+      { id: 'lectern-mcp-tab', title: 'Lectern MCP (Viva Examiner)', category: 'Project', icon: '🎓', action: () => selectProject('lectern-mcp') },
+      { id: 'tf-live', title: 'Launch Live TensorForge Web App', category: 'Live Demo', icon: '🚀', action: () => window.open('https://screen-watcher-elite.github.io/tensorforge/', '_blank') },
+      { id: 'term-bench', title: 'Run MCP Latency Stress Test (Terminal)', category: 'Action', icon: '⚡', action: () => { scrollToTerminal(); document.getElementById('terminal-input').value = 'bench'; document.getElementById('terminal-cmd-form').dispatchEvent(new Event('submit')); } },
+      { id: 'term-ghost', title: 'Dispatch Ghost Background Typing', category: 'Action', icon: '👻', action: () => { scrollToTerminal(); simulateDispatch('ghost_type'); } },
+      { id: 'term-som', title: 'Dispatch Set-of-Marks (SoM) Grounding', category: 'Action', icon: '📸', action: () => { scrollToTerminal(); simulateDispatch('browser_inspect'); } },
+      { id: 'theme-cyan', title: 'Switch Theme: Cyber Cyan', category: 'Theme', icon: '🔵', action: () => setThemeFn('cyan') },
+      { id: 'theme-emerald', title: 'Switch Theme: Matrix Emerald', category: 'Theme', icon: '🟢', action: () => setThemeFn('emerald') },
+      { id: 'theme-rose', title: 'Switch Theme: Anthropic Rose', category: 'Theme', icon: '🔴', action: () => setThemeFn('rose') },
+      { id: 'theme-indigo', title: 'Switch Theme: Quantum Indigo', category: 'Theme', icon: '🟣', action: () => setThemeFn('indigo') },
+      { id: 'matrix-easter', title: 'Easter Egg: Matrix Digital Rain', category: 'Easter Egg', icon: '🌧️', action: () => triggerMatrixRain() },
+      { id: 'copy-email', title: 'Copy Email: chikaneashutosh65@gmail.com', category: 'Contact', icon: '✉️', action: () => { navigator.clipboard.writeText('chikaneashutosh65@gmail.com'); alert('Email copied: chikaneashutosh65@gmail.com'); } }
+    ];
+
+    let selectedIndex = 0;
+    let currentMatches = [...COMMAND_ITEMS];
+
+    function renderResults() {
+      resultsContainer.innerHTML = '';
+      if (currentMatches.length === 0) {
+        resultsContainer.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--text-muted); font-size: 13px;">No matching commands found.</div>';
+        return;
+      }
+
+      currentMatches.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = `cmd-item ${idx === selectedIndex ? 'selected' : ''}`;
+        div.innerHTML = `
+          <div class="cmd-item-left">
+            <span>${item.icon}</span>
+            <span>${item.title}</span>
+          </div>
+          <span class="cmd-badge">${item.category}</span>
+        `;
+        div.addEventListener('click', () => {
+          item.action();
+          closePalette();
+        });
+        resultsContainer.appendChild(div);
+      });
+    }
+
+    function openPalette() {
+      modal.classList.add('active');
+      input.value = '';
+      currentMatches = [...COMMAND_ITEMS];
+      selectedIndex = 0;
+      renderResults();
+      input.focus();
+      SoundEngine.click();
+    }
+
+    function closePalette() {
+      modal.classList.remove('active');
+    }
+
+    if (btnOpen) btnOpen.addEventListener('click', openPalette);
+    modal.addEventListener('click', e => {
+      if (e.target === modal) closePalette();
+    });
+
+    input.addEventListener('input', () => {
+      const q = input.value.toLowerCase().trim();
+      currentMatches = COMMAND_ITEMS.filter(item =>
+        item.title.toLowerCase().includes(q) || item.category.toLowerCase().includes(q)
+      );
+      selectedIndex = 0;
+      renderResults();
+    });
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        selectedIndex = (selectedIndex + 1) % currentMatches.length;
+        renderResults();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        selectedIndex = (selectedIndex - 1 + currentMatches.length) % currentMatches.length;
+        renderResults();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (currentMatches[selectedIndex]) {
+          currentMatches[selectedIndex].action();
+          closePalette();
+        }
+      } else if (e.key === 'Escape') {
+        closePalette();
+      }
+    });
+
+    window.addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        if (modal.classList.contains('active')) closePalette();
+        else openPalette();
+      }
+    });
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 4h. Keyboard Shortcuts Guide Modal
+  // ════════════════════════════════════════════════════════════════════════════
+  function initShortcutsModal() {
+    const modal = document.getElementById('shortcuts-modal');
+    const btnOpen = document.getElementById('btn-open-shortcuts');
+    const btnClose = document.getElementById('btn-close-shortcuts');
+    if (!modal) return;
+
+    function open() { modal.classList.add('active'); SoundEngine.click(); }
+    function close() { modal.classList.remove('active'); }
+
+    if (btnOpen) btnOpen.addEventListener('click', open);
+    if (btnClose) btnClose.addEventListener('click', close);
+    modal.addEventListener('click', e => { if (e.target === modal) close(); });
+
+    return { open, close };
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 4i. Global Power-User Hotkeys
+  // ════════════════════════════════════════════════════════════════════════════
+  function initKeyboardHotkeys(shortcutsModal) {
+    window.addEventListener('keydown', e => {
+      // Ignore if user is typing in an input
+      if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+        if (e.key === 'Escape') document.activeElement.blur();
+        return;
+      }
+
+      // 1 to 8: Select Project Tabs
+      if (e.key >= '1' && e.key <= '8') {
+        const idx = parseInt(e.key, 10) - 1;
+        if (PROJECTS[idx]) {
+          SoundEngine.click();
+          selectProject(PROJECTS[idx].id);
+          scrollToProjects();
+        }
+      } else if (e.key.toLowerCase() === 't') {
+        SoundEngine.click();
+        scrollToTerminal();
+      } else if (e.key.toLowerCase() === 'p') {
+        SoundEngine.click();
+        scrollToProjects();
+      } else if (e.key.toLowerCase() === 'm') {
+        SoundEngine.click();
+        const sfxBtn = document.getElementById('btn-toggle-sfx');
+        if (sfxBtn) sfxBtn.click();
+      } else if (e.key === '?') {
+        if (shortcutsModal) shortcutsModal.open();
+      } else if (e.key === 'Escape') {
+        document.querySelectorAll('.cmd-palette-modal, .shortcuts-modal, .deploy-modal').forEach(m => m.classList.remove('active'));
+      }
+    });
+  }
+
+  function scrollToTerminal() {
+    const el = document.getElementById('terminal');
+    if (el) {
+      const topOffset = el.getBoundingClientRect().top + window.pageYOffset - 90;
+      window.scrollTo({ top: topOffset, behavior: 'smooth' });
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
   // 5. Initial Bootstrapping & Deep Link Auto-Scroll
   // ════════════════════════════════════════════════════════════════════════════
   function scrollToProjects() {
@@ -947,9 +1728,29 @@ lectern_generate_viva_defense({
   }
 
   function init() {
+    // 1. Initialize interactive visual & audio systems
+    const setTheme = initThemeSwitcher();
+    initNeuralBackground();
+    initCommandPalette(setTheme);
+    const shortcutsModal = initShortcutsModal();
+    initKeyboardHotkeys(shortcutsModal);
+    initTerminalInput(setTheme);
+
+    // 2. Wire up audio toggle button in navbar
+    const sfxBtn = document.getElementById('btn-toggle-sfx');
+    if (sfxBtn) {
+      sfxBtn.addEventListener('click', () => {
+        SoundEngine.enabled = !SoundEngine.enabled;
+        sfxBtn.textContent = SoundEngine.enabled ? '🔊 SFX' : '🔇 SFX';
+        sfxBtn.classList.toggle('active', SoundEngine.enabled);
+        if (SoundEngine.enabled) SoundEngine.success();
+      });
+    }
+
+    // 3. Render project tabs
     renderTabs();
 
-    // Check hash in URL on page load
+    // 4. Check hash in URL on page load (support direct deep-linking e.g. #tensorforge)
     const hash = window.location.hash.replace('#', '');
     if (hash && PROJECTS.some(p => p.id === hash)) {
       selectProject(hash);
@@ -958,14 +1759,15 @@ lectern_generate_viva_defense({
       selectProject('omnidesk');
     }
 
-    // Listen for hash changes (e.g. back/forward, deep links)
+    // 5. Listen for hash changes (e.g. back/forward, deep links)
     window.addEventListener('hashchange', handleHashChange);
 
-    // Initial terminal greeting
+    // 6. Initial terminal greeting & interactive hints
     appendTerminalLog('rust', 'OmniDesk MCP Host v2.1.0 (Windows PE x64 Native)');
     appendTerminalLog('rust', 'Loaded: Win32 PostMessage pipeline, WinRT OcrEngine, 500MB Rolling Cache');
     appendTerminalLog('rpc', 'Client initialized connection over stdio (JSON-RPC 2.0)');
     appendTerminalLog('ok', 'Click any tool button above to test real-time tool execution');
+    appendTerminalLog('info', 'ProTip: Try typing "help" or "matrix-rain" into the terminal prompt below!');
   }
 
   window.addEventListener('DOMContentLoaded', init);
